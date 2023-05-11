@@ -1,0 +1,90 @@
+#include <stdio.h>
+
+int main()
+{
+    int n = 19; 
+    int pages[n]; 
+    int frames[3]; 
+    int page_faults = 0; 
+
+   
+    pages[0] = 7;
+    pages[1] = 0;
+    pages[2] = 1;
+    pages[3] = 2;
+    pages[4] = 0;
+    pages[5] = 3;
+    pages[6] = 0;
+    pages[7] = 4;
+    pages[8] = 2;
+    pages[9] = 3;
+    pages[10] = 0;
+    pages[11] = 3;
+    pages[12] = 2;
+    pages[13] = 1;
+    pages[14] = 2;
+    pages[15] = 0;
+    pages[16] = 1;
+    pages[17] = 7;
+    pages[18] = 0;
+
+    
+    for (int i = 0; i < 3; i++)
+    {
+        frames[i] = -1;
+    }
+
+  
+    for (int i = 0; i < n; i++)
+    {
+        int page = pages[i];
+        int found = 0;
+        for (int j = 0; j < 3; j++)
+        {
+            if (frames[j] == page) 
+            {
+                found = 1;
+                break;
+            }
+}
+        if (!found)
+        {
+            int max_future = -1;
+            int replace_index = -1;
+
+            for (int j = 0; j < 3; j++)
+            {
+                int future = 0;
+
+                for (int k = i + 1; k < n; k++)
+                {
+                    if (frames[j] == pages[k]) 
+                    {
+                        future = k - i;
+                        break;
+                    }
+                }
+
+                if (future == 0)
+                {
+                    replace_index = j;
+                    break;
+                }
+
+                if (future > max_future) 
+                {
+                    max_future = future;
+                    replace_index = j;
+                }
+            }
+
+          
+            frames[replace_index] = page;
+            page_faults++;
+        }
+    }
+
+    printf("Number of page faults: %d\n", page_faults);
+
+    return 0;
+}
