@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+#define N 5
+
+pthread_t philosophers[N];
+pthread_mutex_t forks[N];
+int state[N];
+
+void *philosopher(void *arg) 
+{
+    int i = *((int *) arg);
+    int left = i;
+    int right = (i + 1) % N;
+    while (1)
+    {
+        state[i] = 0;
+        printf("Philosopher %d is THINKING\n", i);
+        sleep(rand() % 3);
+        state[i] = 1;
+        printf("Philosopher %d is HUNGRY\n", i);
+        pthread_mutex_lock(&forks[left]);
+        pthread_mutex_lock(&forks[right]);
+        state[i] = 2; 
+        printf("Philosopher %d is EATING\n", i);
+        sleep(rand() % 3);
+        pthread_mutex_unlock(&forks[right]);
+        pthread_mutex_unlock(&forks[left]);
+    }
+}
+
+int main()
+{
+    int i;
+    for (i = 0; i < N; i++) 
+    {
+        pthread_mutex_init(&forks[i], NULL);
+    }
+    for (i = 0; i < N; i++) 
+    {
+        int *arg = malloc(sizeof(*arg));
+        *arg = i;
+        pthread_create(&philosophers[i], NULL, philosopher, arg);
+    }
+    for (i = 0; i < N; i++) 
+    {
+        pthread_join(philosophers[i], NULL);
+    }
+    for (i = 0; i < N; i++) 
+    {
+        pthread_mutex_destroy(&forks[i]);
+    }
+    return 0;
+}
