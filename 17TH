@@ -1,0 +1,74 @@
+#include <stdio.h>
+
+struct Process
+{
+    int burst_time; 
+    int remaining_time; 
+    int waiting_time; 
+    int turnaround_time; 
+};
+
+int main()
+{
+    int n = 3; 
+    int quantum = 4;
+    struct Process processes[n]; 
+    int total_waiting_time = 0; 
+    int total_turnaround_time = 0;
+
+    processes[0].burst_time = 24;
+    processes[1].burst_time = 3;
+    processes[2].burst_time = 3;
+
+    for (int i = 0; i < n; i++) 
+    {
+        processes[i].remaining_time = processes[i].burst_time;
+        processes[i].waiting_time = 0;
+        processes[i].turnaround_time = 0;
+    }
+
+    int t = 0; 
+    int done = 0; 
+
+    while (!done) 
+    {
+        done = 1;
+
+        for (int i = 0; i < n; i++)
+        {
+            if (processes[i].remaining_time > 0)
+            {
+                done = 0;
+
+                if (processes[i].remaining_time > quantum)
+                {
+    
+                    t += quantum;
+                    processes[i].remaining_time -= quantum;
+                } 
+                else
+                {
+                    t += processes[i].remaining_time;
+                    processes[i].remaining_time;
+                    processes[i].waiting_time = t - processes[i].burst_time;
+                    processes[i].turnaround_time = t;
+                }
+            }
+        }
+    }
+
+   
+    for (int i = 0; i < n; i++)
+    {
+        total_waiting_time += processes[i].waiting_time;
+        total_turnaround_time += processes[i].turnaround_time;
+  }
+    float average_waiting_time = (float) total_waiting_time / n;
+    float average_turnaround_time = (float) total_turnaround_time / n;
+
+  
+    printf("Average waiting time: %.2f ms\n", average_waiting_time);
+    printf("Average turnaround time: %.2f ms\n", average_turnaround_time);
+
+    return 0;
+}
