@@ -1,0 +1,78 @@
+#include <stdio.h>
+
+#define MAX_MEMORY_PARTITIONS 6
+#define MAX_PROCESSES 5
+
+int memory_partitions[MAX_MEMORY_PARTITIONS] = {300, 600, 350, 200, 750, 125};
+int processes[MAX_PROCESSES] = {115, 500, 358, 200, 375};
+int allocated[MAX_PROCESSES] = {0};
+
+void worstFit(int n, int m)
+{
+    int i, j;
+    for (i = 0; i < n; i++) 
+    {
+        int index = -1;
+        for (j = 0; j < m; j++) 
+        {
+            if (memory_partitions[j] >= processes[i]) 
+            {
+                if (index == -1) 
+                {
+                    index = j;
+                } else if (memory_partitions[j] > memory_partitions[index])
+                {
+                    index = j;
+                }
+            }
+        }
+        if (index != -1)
+        {
+            allocated[i] = 1;
+            memory_partitions[index] -= processes[i];
+        }
+    }
+}
+
+int main()
+{
+    int i;
+    printf("Memory partitions:\n");
+    for (i = 0; i < MAX_MEMORY_PARTITIONS; i++)
+    {
+        printf("%d KB ", memory_partitions[i]);
+    }
+    printf("\n");
+
+    printf("Processes:\n");
+    for (i = 0; i < MAX_PROCESSES; i++) 
+    {
+        printf("%d KB ", processes[i]);
+    }
+    printf("\n");
+
+    worstFit(MAX_PROCESSES, MAX_MEMORY_PARTITIONS);
+
+    printf("Memory allocation:\n");
+    for (i = 0; i < MAX_PROCESSES; i++) 
+    {
+        printf("Process %d: ", i+1);
+        if (allocated[i])
+        {
+            printf("allocated\n");
+        } 
+        else 
+        {
+            printf("not allocated\n");
+        }
+    }
+
+    printf("Memory partitions after allocation:\n");
+    for (i = 0; i < MAX_MEMORY_PARTITIONS; i++)
+    {
+        printf("%d KB ", memory_partitions[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
