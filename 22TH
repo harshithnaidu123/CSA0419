@@ -1,0 +1,48 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_USERS 3
+#define MAX_FILES_PER_USER 3
+#define MAX_FILENAME_LENGTH 20
+
+struct file {
+    char name[MAX_FILENAME_LENGTH];
+};
+
+struct user {
+    char name[MAX_FILENAME_LENGTH];
+    struct file files[MAX_FILES_PER_USER];
+};
+
+struct directory {
+    struct user users[MAX_USERS];
+};
+
+int main() {
+    struct directory dir;
+    int i, j, k;
+
+    // create user directories
+    for (i = 0; i < MAX_USERS; i++) {
+        printf("Enter name of user %d: ", i+1);
+        scanf("%s", dir.users[i].name);
+
+        // create files for user
+        for (j = 0; j < MAX_FILES_PER_USER; j++) {
+            printf("Enter name of file %d for user %s: ", j+1, dir.users[i].name);
+            scanf("%s", dir.users[i].files[j].name);
+        }
+    }
+
+    // print directory structure
+    printf("Directory structure:\n");
+    for (i = 0; i < MAX_USERS; i++) {
+        printf("%s:\n", dir.users[i].name);
+        for (j = 0; j < MAX_FILES_PER_USER; j++) {
+            printf("\t%s\n", dir.users[i].files[j].name);
+        }
+    }
+
+    return 0;
+}
