@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <math.h>
+#define DISK_BLOCK_SIZE 8192
+#define POINTER_SIZE 4
+#define DIRECT_BLOCKS 12
+#define POINTERS_PER_BLOCK (DISK_BLOCK_SIZE / POINTER_SIZE)
+
+unsigned long long calculateMaxFileSize() 
+{
+    unsigned long long maxFileSize = 0;
+    unsigned long long totalBlocks = 0;
+    unsigned long long requiredBlocks = 0;
+    totalBlocks = DIRECT_BLOCKS;  
+    totalBlocks += POINTERS_PER_BLOCK;
+    totalBlocks += pow(POINTERS_PER_BLOCK, 2);
+    totalBlocks += pow(POINTERS_PER_BLOCK, 3);
+    maxFileSize = totalBlocks * DISK_BLOCK_SIZE;
+    unsigned long long fileSizeKB = maxFileSize / 1024;
+    unsigned long long fileSizeMB = fileSizeKB / 1024;
+    unsigned long long fileSizeGB = fileSizeMB / 1024;
+    unsigned long long fileSizeTB = fileSizeGB / 1024;
+
+    printf("Maximum File Size:\n");
+    printf("In Bytes: %llu\n", maxFileSize);
+    printf("In KB: %llu\n", fileSizeKB);
+    printf("In MB: %llu\n", fileSizeMB);
+    printf("In GB: %llu\n", fileSizeGB);
+    printf("In TB: %llu\n", fileSizeTB);
+
+    return maxFileSize;
+}
+
+int main() 
+{
+    calculateMaxFileSize();
+
+    return 0;
+}
