@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#define MAX_SIZE 100
+
+int main()
+{
+    int fd;
+    char filename[50];
+    char data[MAX_SIZE];
+
+    printf("Enter the filename: ");
+    scanf("%s", filename);
+    fd = creat(filename, 0644);
+    if (fd == -1) 
+    {
+        printf("Error creating the file.\n");
+        exit(1);
+    }
+
+    printf("Enter data to write to the file (max %d characters):\n", MAX_SIZE);
+    scanf(" %[^\n]", data);
+    if (write(fd, data, sizeof(data)) == -1)
+    {
+        printf("Error writing to the file.\n");
+        exit(1);
+    }
+    close(fd);
+    fd = open(filename, O_RDONLY);
+    if (fd == -1) 
+    {
+        printf("Error opening the file.\n");
+        exit(1);
+    }
+
+    printf("Data read from the file:\n");
+    ssize_t bytesRead;
+    while ((bytesRead = read(fd, data, sizeof(data))) > 0)
+    {
+        write(STDOUT_FILENO, data, bytesRead);
+    }
+    close(fd);
+
+    return 0;
+}
