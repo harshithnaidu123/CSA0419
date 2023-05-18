@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <pthread.h>
+
+#define MAX_NUMBER 20
+
+pthread_mutex_t mutex;
+pthread_cond_t cond_even;
+pthread_cond_t cond_odd;
+int number = 1;
+
+void* printEven(void* arg)
+{
+    for (;;)
+    {
+        pthread_mutex_lock(&mutex);
+        while (number % 2 != 0)
+        {
+            pthread_cond_wait(&cond_even, &mutex);
+        }
+        printf("Even: %d\n", number);
+        number++;
+        pthread_cond_signal(&cond_odd);
+        pthread_mutex_unlock(&mutex);
+        if (number > MAX_NUMBER)
+            break;
+    }
+    pthread_exit(NULL);
+}
+
+void* printOdd(void* arg)
+{
+    for (;;)
+    {
+        pthread_mutex_lock(&mutex);
+        while (number % 2 != 1) 
+        {
+            pthread_cond_wait(&cond_odd, &mutex);
+        }
+        printf("Odd: %d\n", number);
+        number++;
+        pthread_cond_signal(&cond_even);
+        pthread_mutex_unlock(&mutex);
+        if (number > MAX_NUMBER)
+            break;
+    }
+    pthread_exit(NULL);
+}
+
+int main()
+{
+    pthread_t thread_even, thread_odd;
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&cond_even, NULL);
+    pthread_cond_init(&cond_odd, NULL);
+
+    pthread_create(&thread_even, NULL, printEven, NULL);
+    pthread_create(&thread_odd, NULL, printOdd, NULL);
+
+    pthread_join(thread_even, NULL);
+    pthread_join(thread_odd, NULL);
+
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&cond_even);
+    pthread_cond_destroy(&cond_odd);
+
+    return 0;
+}
