@@ -1,0 +1,67 @@
+#include<stdio.h>
+#include<stdbool.h>
+#define DISK_SIZE 16
+#define INODE_BLOCKS 8
+#define MIN_FILE_SIZE 1
+#define MAX_FILE_SIZE 9
+bool areBlocksFree(bool allocatedBlocks[], int startBlock, int numBlocks)
+{
+    for (int i = startBlock; i < startBlock + numBlocks; i++)
+    {
+        if (allocatedBlocks[i])
+            return false;
+    }
+    return true;
+}
+void allocateBlocks(bool allocatedBlocks[], int startBlock, int numBlocks) 
+
+{
+    for (int i = startBlock; i < startBlock + numBlocks; i++)
+    {
+        allocatedBlocks[i] = true;
+    }
+}
+void deallocateBlocks(bool allocatedBlocks[], int startBlock, int numBlocks)
+{
+    for (int i = startBlock; i < startBlock + numBlocks; i++)
+    {
+        allocatedBlocks[i] = false;
+    }
+}
+int main() {
+    bool allocatedBlocks[DISK_SIZE] = { false };
+    for (int i = 0; i < INODE_BLOCKS; i++) {
+        allocatedBlocks[i] = true;
+    }
+    int fileSizes[] = { 1, 2, 3, 9, 10 };
+    int numFiles = sizeof(fileSizes) / sizeof(fileSizes[0]);
+    printf("Sequential File Allocation:\n");
+    for (int i = 0; i < numFiles; i++) {
+        int fileSize = fileSizes[i];
+        if (fileSize < MIN_FILE_SIZE || fileSize > MAX_FILE_SIZE)
+        {
+            printf("File %d: Invalid file size %d KB\n", i + 1, fileSize);
+            continue;
+        }
+        bool foundBlocks = false;
+        int startBlock = -1;
+        for (int j = INODE_BLOCKS; j <= DISK_SIZE - fileSize; j++) 
+        {
+            if (areBlocksFree(allocatedBlocks, j, fileSize))
+            {
+                foundBlocks = true;
+                startBlock = j;
+                break;
+            }
+        }
+        if (foundBlocks)
+        {
+            allocateBlocks(allocatedBlocks, startBlock, fileSize);
+            printf("File %d: Allocated blocks [%d-%d]\n", i + 1, startBlock, startBlock + fileSize - 1);
+        } else {
+            printf("File %d: Not enough contiguous blocks available\n", i + 1);
+            break;
+        }
+    }
+    return 0;
+}
